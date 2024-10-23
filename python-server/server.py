@@ -5,9 +5,10 @@ from transformers import pipeline, AutoTokenizer
 from keybert import KeyBERT
 import nltk
 import re
-from crawler import web_crawler
 from urllib.parse import urlparse
 from googlesearch import search 
+from concurrent.futures import ThreadPoolExecutor
+import webCrawler
 
 app = Flask(__name__)
 CORS(app)
@@ -79,30 +80,21 @@ def extract_keywords(text, num_keywords=4):
     keywords = kw_model.extract_keywords(text, keyphrase_ngram_range=(1, 2), stop_words=None)
     return [keyword for keyword, _ in keywords]
 
+def perform_search(query):
+    return list(search(query, num_results=5))
+
 def google_dork_search(keywords, num_results=5):
-    print(keywords)
-    # Create the keyword phrases for the base query, intitle, and inurl
-    keywords_query = ' OR '.join(f'"{keyword}"' for keyword in keywords)
-    intitle_query = ' OR '.join(f'intitle:"{keyword}"' for keyword in keywords)
-    inurl_query = ' OR '.join(f'inurl:"{keyword}"' for keyword in keywords)
-
-    # Combine them into a single advanced query
-    advanced_query = f'{keywords_query} OR {intitle_query} OR {inurl_query}'
-
-    # Perform Google search and return top num_results links
-    search_results = list(search(advanced_query, num_results=num_results))
-
-    # Print the query for debugging
-    print("Google Dorking Query:", advanced_query)
-    print("Search Results:", search_results)
-
-    return search_results
+    queries = [f'"{keyword}"' for keyword in keywords]
+    with ThreadPoolExecutor() as executor:
+        results = list(executor.map(perform_search, queries))
+    # Flatten the list of results from different queries
+    search_results = [item for sublist in results for item in sublist]
+    return search_results[:num_results]  # Limit to top results
 
 @app.route('/summarize', methods=['POST'])
 def summarize():
     data = request.json
     html_content = data.get('html', '')
-    
     # Clean HTML to get only paragraph content
     cleaned_text = clean_html(html_content)
     
@@ -122,11 +114,17 @@ def summarize():
     
     # Extract keywords from the summary
     keywords = extract_keywords(final_summary, num_keywords=3)
-    top_links = google_dork_search(keywords, num_results=5)
+    
+    # Get initial seed URLs from Google search
+    seed_urls = google_dork_search(keywords, num_results=10)
+    
+    # Use the crawler to find relevant pages
+    relevant_links = webCrawler.get_relevant_links(seed_urls, cleaned_text)
+    
     return jsonify({
         'summary': final_summary,
         'keywords': keywords,
-        'top_links': top_links
+        'top_links': relevant_links
     })
 
 if __name__ == '__main__':
