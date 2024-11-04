@@ -6,14 +6,55 @@
     body { width: 300px; padding: 10px; }
     #summary, #keywords, #topLinks { margin-top: 10px; }
     #topLinks a { display: block; margin-bottom: 5px; }
+    #topL, #loading{
+      display: none;
+      margin-top: 10px;
+    }
+    .loadingText{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner {
+      display: none; /* Hidden by default */
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #3498db;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto; /* Centering */
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #summarizeBtn{
+      background-color: #5792b9;
+      border-radius: 25px;
+      padding: 12px 20px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+    #summarizeBtn:hover{
+      background-color: #3498db;
+      transform: translateY(-3px);
+    }
   </style>
 </head>
 <body>
   <h1>Article Summarizer</h1>
   <button id="summarizeBtn">Summarize Article</button>
   <div id="summary"></div>
+  <div id="loading">
+    <div class="spinner" id="loadingSpinner"></div>
+    <h2 class="loadingText">Loading Summary</h2>
+  </div>
+  <div id="error"></div>
   <div id="keywords"></div>
-  <h3>Top Links</h3>
+  <h3 id="topL">Top Links</h3>
   <div id="topLinks"></div> <!-- New section for top links -->
   <script src="popup.js"></script>
 </body>

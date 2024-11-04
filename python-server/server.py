@@ -111,16 +111,16 @@ def summarize():
     # Combine summaries
     full_summary = " ".join(summaries)
     final_summary = full_summary.replace("Victor", "author").replace("Tommo", "author")
-    
+    print(final_summary)
     # Extract keywords from the summary
     keywords = extract_keywords(final_summary, num_keywords=3)
-    
+    print(keywords)
     # Get initial seed URLs from Google search
     seed_urls = google_dork_search(keywords, num_results=10)
-    
+    print(seed_urls)
     # Use the crawler to find relevant pages
     relevant_links = webCrawler.get_relevant_links(seed_urls, cleaned_text)
-    
+    print(relevant_links)
     return jsonify({
         'summary': final_summary,
         'keywords': keywords,
