@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 from googlesearch import search 
 from concurrent.futures import ThreadPoolExecutor
 import webCrawler
+import time
+import csv
 
 app = Flask(__name__)
 CORS(app)
@@ -24,6 +26,14 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # Define chunk size
 chunk_size = min(tokenizer.model_max_length, 3000)
+
+def log_to_csv(original_url, num_relevant_links, crawl_time, visited_links_count, avg_similarity,filename='crawl_log.csv'):
+    with open(filename, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        # Write header only if file is empty
+        if file.tell() == 0:
+            writer.writerow(['Original URL', 'Number of relevant Links','Average Similarity', 'Crawl Time','Number of Visted Links'])
+        writer.writerow([original_url, num_relevant_links, avg_similarity, crawl_time,visited_links_count])
 
 def preprocess_text(text):
     text = re.sub(r'\s+', ' ', text)
@@ -95,6 +105,7 @@ def google_dork_search(keywords, num_results=5):
 def summarize():
     data = request.json
     html_content = data.get('html', '')
+    original_url = data.get('url','')
     # Clean HTML to get only paragraph content
     cleaned_text = clean_html(html_content)
     
@@ -110,17 +121,26 @@ def summarize():
     
     # Combine summaries
     full_summary = " ".join(summaries)
-    final_summary = full_summary.replace("Victor", "author").replace("Tommo", "author")
-    print(final_summary)
+    final_summary = full_summary.replace("Victor", "author").replace("Tommo", "author").replace("chapter", "article").replace("lesson","article")
+    # print(final_summary)
     # Extract keywords from the summary
-    keywords = extract_keywords(final_summary, num_keywords=3)
-    print(keywords)
+    keywords = extract_keywords(preprocessed_text, num_keywords=3)
+    # print(keywords)
     # Get initial seed URLs from Google search
+    start_time = time.time()
     seed_urls = google_dork_search(keywords, num_results=10)
-    print(seed_urls)
+    # print(seed_urls)
     # Use the crawler to find relevant pages
-    relevant_links = webCrawler.get_relevant_links(seed_urls, cleaned_text)
-    print(relevant_links)
+    relevant_links, visited_links_count,avg_similarity = webCrawler.get_relevant_links(seed_urls, cleaned_text)
+    # print(relevant_links)
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    num_relevant_links = len(relevant_links)
+    print(f"Time taken for the process: {elapsed_time:.2f} seconds")
+
+    # Log data to CSV
+    log_to_csv(original_url, num_relevant_links, elapsed_time,visited_links_count,avg_similarity)
+
     return jsonify({
         'summary': final_summary,
         'keywords': keywords,

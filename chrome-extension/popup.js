@@ -12,16 +12,17 @@ document.getElementById("summarizeBtn").addEventListener("click", () => {
     const tabUrl = currentTab.url;
 
     chrome.storage.local.get([tabUrl], (result) => {
-      if (result[tabUrl]) {
-        const storedData = result[tabUrl];
-        loadingElement.style.display = "none";
-        spinner.style.display = "none";
-        displaySummaryAndLinks(
-          storedData.summary,
-          storedData.keywords,
-          storedData.top_links
-        );
-      } else {
+      // if (result[tabUrl]) {
+      //   const storedData = result[tabUrl];
+      //   loadingElement.style.display = "none";
+      //   spinner.style.display = "none";
+      //   displaySummaryAndLinks(
+      //     storedData.summary,
+      //     storedData.keywords,
+      //     storedData.top_links
+      //   );
+      // } 
+      // else {
         chrome.tabs.sendMessage(
           tabs[0].id,
           { action: "getHTML" },
@@ -32,7 +33,7 @@ document.getElementById("summarizeBtn").addEventListener("click", () => {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ html: response.html }),
+                body: JSON.stringify({ html: response.html, url: tabUrl }),
               })
                 .then((response) => response.json())
                 .then((data) => {
@@ -65,7 +66,7 @@ document.getElementById("summarizeBtn").addEventListener("click", () => {
             }
           }
         );
-      }
+      // }
     });
   });
 });
@@ -74,8 +75,10 @@ function displaySummaryAndLinks(summary, keywords, top_links) {
   const summaryElement = document.getElementById("summary");
   const keywordsElement = document.getElementById("keywords");
   const topLinksContainer = document.getElementById("topLinks");
+  document.getElementById("topL").style.display="block";
 
   summaryElement.textContent = summary;
+
   keywordsElement.textContent = "Keywords: " + keywords.join(", ");
 
   topLinksContainer.innerHTML = "";

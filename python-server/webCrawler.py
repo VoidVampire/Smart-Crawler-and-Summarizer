@@ -118,9 +118,10 @@ class RelevantWebCrawler:
                 await self.url_queue.put((next_url, depth + 1))
 
     async def crawl(self, seed_urls: List[str], original_content: str) -> List[str]:
-        """Main crawling function with improved concurrency and error handling."""
+        """Main crawling function with concurrency and error handling."""
         start_time = time.time()
         self.semaphore = asyncio.Semaphore(self.concurrency)
+        similarities = []
         
         # Initialize URL queue with seed URLs
         valid_seeds = [url for url in seed_urls if self.is_valid_url(url)]
@@ -157,11 +158,15 @@ class RelevantWebCrawler:
         sorted_pages = sorted(self.relevant_pages, 
                             key=lambda x: x['similarity'], 
                             reverse=True)
+        for page in sorted_pages:
+            similarities.append(page['similarity'])
+        avg_similarity = np.mean(similarities) if similarities else 0
+        visited_links_count = len(self.visited_urls)
         
         if not sorted_pages:
             return ["No relevant links could be found. Please try with different keywords."]
             
-        return [page['url'] for page in sorted_pages[:7]]
+        return [page['url'] for page in sorted_pages[:]],visited_links_count,avg_similarity
 
     def is_valid_url(self, url: str) -> bool:
         """Enhanced URL validation."""
@@ -200,7 +205,8 @@ def get_relevant_links(seed_urls: List[str], original_content: str) -> List[str]
     """Helper function with timeout protection."""
     try:
         crawler = RelevantWebCrawler()
-        return asyncio.run(crawler.crawl(seed_urls, original_content))
+        relevant_links, visited_links_count,avg_similarity = asyncio.run(crawler.crawl(seed_urls, original_content))
+        return relevant_links, visited_links_count,avg_similarity
     except Exception as e:
         logger.error(f"Crawler error: {str(e)}")
         return ["An error occurred while searching for relevant links."]
