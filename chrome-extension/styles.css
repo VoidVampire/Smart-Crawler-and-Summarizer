@@ -73,7 +73,7 @@ body {
     justify-content: flex-end;
 }
 
-#crawlButton{
+#summarizeBtn, #startBtn, #crawlButton {
     background-color: #5792b9;
     border-radius: 25px;
     padding: 12px 20px;
@@ -83,22 +83,7 @@ body {
     text-align: center;
 }
 
-#summarizeBtn {
-    background-color: #5792b9;
-    border-radius: 25px;
-    padding: 12px 20px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-}
-
-#summarizeBtn:hover {
-    background-color: #3498db;
-    transform: translateY(-3px);
-}
-
-#crawlBtn:hover {
+#summarizeBtn:hover, #crawlBtn:hover, #startBtn:hover {
     background-color: #3498db;
     transform: translateY(-3px);
 }

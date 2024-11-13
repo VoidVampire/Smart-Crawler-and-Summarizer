@@ -1,3 +1,8 @@
+document.getElementById("startBtn").addEventListener("click", () => {
+  document.getElementById("summarizeBtn").click();
+  document.getElementById("crawlButton").click();
+})
+
 document.getElementById("crawlButton").addEventListener("click", () => {
   console.log("Clicked")
   const loadingElement = document.getElementById("crawlLoading");
