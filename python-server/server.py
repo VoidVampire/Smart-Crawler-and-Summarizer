@@ -101,6 +101,32 @@ def google_dork_search(keywords, num_results=5):
     search_results = [item for sublist in results for item in sublist]
     return search_results[:num_results]  # Limit to top results
 
+@app.route('/crawl', methods=['POST'])
+def crawl():
+    data = request.json
+    html_content = data.get('html', '')
+    original_url = data.get('url','')
+    print("Starting..........")
+    # Clean HTML to get only paragraph content
+    cleaned_text = clean_html(html_content)
+    
+    # Preprocess and chunk the text
+    preprocessed_text = preprocess_text(cleaned_text)
+    
+    keywords = extract_keywords(preprocessed_text, num_keywords=3)
+    # print(keywords)
+    # Get initial seed URLs from Google search
+    start_time = time.time()
+    seed_urls = google_dork_search(keywords, num_results=10)
+    # print(seed_urls)
+    # Use the crawler to find relevant pages
+    relevant_links, visited_links_count,avg_similarity = webCrawler.get_relevant_links(seed_urls, cleaned_text)
+    # print(relevant_links)
+    return  jsonify({
+        'keywords': keywords,
+        'top_links': relevant_links
+    })
+
 @app.route('/summarize', methods=['POST'])
 def summarize():
     data = request.json
@@ -125,27 +151,9 @@ def summarize():
     final_summary = full_summary.replace("Victor", "author").replace("Tommo", "author").replace("chapter", "article").replace("lesson","article")
     # print(final_summary)
     # Extract keywords from the summary
-    keywords = extract_keywords(preprocessed_text, num_keywords=3)
-    # print(keywords)
-    # Get initial seed URLs from Google search
-    start_time = time.time()
-    seed_urls = google_dork_search(keywords, num_results=10)
-    # print(seed_urls)
-    # Use the crawler to find relevant pages
-    relevant_links, visited_links_count,avg_similarity = webCrawler.get_relevant_links(seed_urls, cleaned_text)
-    # print(relevant_links)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    num_relevant_links = len(relevant_links)
-    print(f"Time taken for the process: {elapsed_time:.2f} seconds")
-
-    # Log data to CSV
-    log_to_csv(original_url, num_relevant_links, elapsed_time,visited_links_count,avg_similarity)
-
+        
     return jsonify({
         'summary': final_summary,
-        'keywords': keywords,
-        'top_links': relevant_links
     })
 
 if __name__ == '__main__':
