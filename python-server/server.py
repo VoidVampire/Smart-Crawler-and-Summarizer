@@ -106,6 +106,7 @@ def summarize():
     data = request.json
     html_content = data.get('html', '')
     original_url = data.get('url','')
+    print("Starting..........")
     # Clean HTML to get only paragraph content
     cleaned_text = clean_html(html_content)
     
