@@ -7,7 +7,7 @@ import nltk
 import re
 from urllib.parse import urlparse
 from googlesearch import search 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import webCrawler
 import time
 import csv
@@ -142,12 +142,20 @@ def summarize():
     
     # Summarize each chunk
     summaries = []
-    for chunk in text_chunks:
-        result = summarizer(chunk, max_length=512, min_length=100, do_sample=False)
-        summaries.append(result[0]['summary_text'])
+    with ThreadPoolExecutor() as executor:
+        # Submit all tasks to the thread pool
+        futures = {executor.submit(summarizer, chunk, max_length=512, min_length=100, do_sample=False): idx for idx, chunk in enumerate(text_chunks)}
+        
+        # Collect results in the order of chunk index
+        for future in as_completed(futures):
+            idx = futures[future]  # Get the chunk index from the future
+            result = future.result()  # Get the result of summarization
+            summaries.append((idx, result[0]['summary_text']))
     
+    summaries.sort(key=lambda x: x[0])
+
     # Combine summaries
-    full_summary = " ".join(summaries)
+    full_summary = " ".join([summary for idx, summary in summaries])
     final_summary = full_summary.replace("Victor", "author").replace("Tommo", "author").replace("chapter", "article").replace("lesson","article")
     # print(final_summary)
     # Extract keywords from the summary
