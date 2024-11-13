@@ -7,7 +7,7 @@ import nltk
 import re
 from urllib.parse import urlparse
 from googlesearch import search 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import webCrawler
 import time
 import csv
@@ -127,6 +127,9 @@ def crawl():
         'top_links': relevant_links
     })
 
+def summarize_chunk(chunk, max_length=512, min_length=100, do_sample=False):
+    return summarizer(chunk, max_length=max_length, min_length=min_length, do_sample=do_sample)
+
 @app.route('/summarize', methods=['POST'])
 def summarize():
     data = request.json
@@ -142,9 +145,9 @@ def summarize():
     
     # Summarize each chunk
     summaries = []
-    with ThreadPoolExecutor() as executor:
-        # Submit all tasks to the thread pool
-        futures = {executor.submit(summarizer, chunk, max_length=512, min_length=100, do_sample=False): idx for idx, chunk in enumerate(text_chunks)}
+    with ProcessPoolExecutor() as executor:
+        # Submit all tasks to the process pool
+        futures = {executor.submit(summarize_chunk, chunk, max_length=512, min_length=100, do_sample=False): idx for idx, chunk in enumerate(text_chunks)}
         
         # Collect results in the order of chunk index
         for future in as_completed(futures):

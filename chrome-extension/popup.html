@@ -1,36 +1,47 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Article Summarizer</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Neucha&family=Work+Sans:ital,wght@0,300;1,300&display=swap"
+    rel="stylesheet">
 </head>
+
 <body>
-  <h1>Article Summarizer</h1>
+  <div class="container">
+    <h1 class="heading">Article Summarizer</h1>
 
-  <div class="sumBtn">
-    <button id="startBtn">Generate Both</button>
-  </div>
+    <div class="sumBtn">
+      <img src="./assets/arrows-rotate-solid.svg" class="imgIcon" width="17vh" height="17vh" />
+      <button id="startBtn">Generate Both</button>
+    </div>
 
-  <div id="summary"></div>
-  <div id="summaryLoading">
-    <div class="summarySpinner" id="summaryLoadingSpinner"></div>
-  </div>
-  <div id="summaryError"></div>
-  <div class="sumBtn">
-    <button id="summarizeBtn">Summarize Article</button>
-  </div>
+    <div id="summary"></div>
+    <div id="summaryLoading">
+      <div class="summarySpinner" id="summaryLoadingSpinner"></div>
+    </div>
+    <div id="summaryError"></div>
+    <div class="sumBtn">
+      <img src="./assets/file-lines-regular.svg" class="imgIcon" width="17vh" height="17vh" />
+      <button id="summarizeBtn">Summarize Article</button>
+    </div>
 
-
-  <div id="keywords"></div>
-  <h3 id="topL">Top Links</h3>
-  <div id="topLinks"></div> <!-- New section for top links -->
-  <div id="crawlLoading">
-    <div class="crawlSpinner" id="crawlLoadingSpinner"></div>
-  </div>
-  <div id="crawlError"></div>
-  <div class="crawlBtn">
-    <button id="crawlButton">Get Relevant Links</button>
+    <div id="keywords"></div>
+    <h3 id="topL">Top Links</h3>
+    <div id="topLinks"></div>
+    <div id="crawlLoading">
+      <div class="crawlSpinner" id="crawlLoadingSpinner"></div>
+    </div>
+    <div class="crawlBtn">
+      <img src="./assets/link-solid.svg" class="imgIcon" width="17vh" height="17vh" />
+      <button id="crawlButton">Get Relevant Links</button>
+    </div>
+    <div id="crawlError"></div>
   </div>
   <script src="popup.js"></script>
 </body>
+
 </html>
