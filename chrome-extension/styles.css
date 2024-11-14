@@ -4,9 +4,11 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-size: 14px;
     width: 300px;
     padding: 25px;
-    font-family: "Neucha", sans-serif;
+    padding-top: 0px;
+    font-family: "Times New Roman", sans-serif;
 }
 
 .container {
@@ -19,6 +21,10 @@ body {
 #keywords,
 #topLinks {
     margin-top: 10px;
+}
+
+#summary{
+    font-size: 14px;
 }
 
 #topLinks a {
@@ -91,6 +97,7 @@ body {
 #summarizeBtn,
 #startBtn,
 #crawlButton {
+    font-size: 17px;
     margin-top: 5vh;
     background-color: #5792b9;
     border-radius: 0.5rem;
@@ -99,7 +106,7 @@ body {
     font-weight: bold;
     cursor: pointer;
     text-align: center;
-    font-family: "Neucha", sans-serif;
+    font-family: "Times New Roman", sans-serif;
     border: none;
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
