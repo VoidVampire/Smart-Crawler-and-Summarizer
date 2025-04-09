@@ -1,8 +1,7 @@
 # Smart Crawler and Summarizer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) -->
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-<!-- Add other relevant badges here, e.g., build status, code coverage -->
 
 A powerful tool combining a Chrome Extension frontend with a Flask server backend to intelligently crawl related web pages and summarize web articles. It addresses information overload by providing concise summaries and discovering relevant content based on keywords extracted from the source article.
 
@@ -13,7 +12,6 @@ Built with **Flask**, **aiohttp**, **BeautifulSoup**, **KeyBERT**, **Hugging Fac
 The diagram below illustrates the core process flow from receiving a URL to generating summaries and relevant links:
 
 ![Smart Crawler and Summarizer Workflow](./workflow-diagram.png)
-<!-- **IMPORTANT:** Upload your workflow diagram image (e.g., "workflow-diagram.png") to your GitHub repository and make sure this path is correct. You might place it in an `assets/` folder and update the path accordingly (e.g., ./assets/workflow-diagram.png) -->
 
 **Flow Description:**
 
